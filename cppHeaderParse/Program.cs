@@ -126,7 +126,7 @@ namespace cppHeaderParse
         /// The key is the c/c++ format and the value is the c# translation.</summary>
              public static SortedDictionary<string, string> typeConversions = new SortedDictionary<string, string>()
         {
-            { "bool","bool"},
+         { "bool","bool"},
             { "char","sbyte"},
             { "char*","string"},
             { "double","double"},
@@ -160,14 +160,13 @@ namespace cppHeaderParse
             { "Float32_t","float"},
 
             { "stAncFlashMemoryMap_t","stAncFlashMemoryMap"},
-            { "AdcType_t","AdcType"},
+            
             { "SilSmpFreq_t","SilSmpFreq"},
             { "stDpuIoAllocation_t","stDpuIoAllocation"},
             { "SilArnrCalCommand_t","SilArnrCalCommand"},
-            { "SilArnrVehicleLeftRightWheel_t","SilArnrVehicleLeftRightWheel"},
+           
             { "SeatPosCfg_st","SeatPosCfg"},
-            
-            { "IOsHrAffiliation_t","IOsHrAffiliation"},
+           
 
             { "PhoneCallConfig_st","PhoneCallConfig"},
             { "CLS_Config_st","CLS_Config"},
