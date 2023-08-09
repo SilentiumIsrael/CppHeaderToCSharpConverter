@@ -124,7 +124,7 @@ namespace cppHeaderParse
 
         /// <summary>This is a dictionary of all the built-in and user defined types.
         /// The key is the c/c++ format and the value is the c# translation.</summary>
-        public static SortedDictionary<string, string> typeConversions = new SortedDictionary<string, string>()
+             public static SortedDictionary<string, string> typeConversions = new SortedDictionary<string, string>()
         {
             { "bool","bool"},
             { "char","sbyte"},
@@ -149,6 +149,38 @@ namespace cppHeaderParse
             { "void*","UIntPtr"},
             { "wchar_t","Char"},
             { "wchar_t*","string"},
+           
+            { "UInt32_t","uint"},
+            { "Int32_t","int"},
+            { "UInt8_t","sbyte"},
+            { "Int8_t","byte"},
+            
+            { "Int16_t","short"},
+            { "UInt16_t","ushort"},
+            { "Float32_t","float"},
+
+            { "stAncFlashMemoryMap_t","stAncFlashMemoryMap"},
+            { "AdcType_t","AdcType"},
+            { "SilSmpFreq_t","SilSmpFreq"},
+            { "stDpuIoAllocation_t","stDpuIoAllocation"},
+            { "SilArnrCalCommand_t","SilArnrCalCommand"},
+            { "SilArnrVehicleLeftRightWheel_t","SilArnrVehicleLeftRightWheel"},
+            { "SeatPosCfg_st","SeatPosCfg"},
+            
+            { "IOsHrAffiliation_t","IOsHrAffiliation"},
+
+            { "PhoneCallConfig_st","PhoneCallConfig"},
+            { "CLS_Config_st","CLS_Config"},
+            { "LevelBudget_f32_st","LevelBudget_f32"},
+            { "LevelBudget_st","LevelBudget"},
+            { "SimpleMovAveConfig_st","SimpleMovAveConfig"},
+            { "stOnTheFlyTestStepsize_t","stOnTheFlyTestStepsize"},
+            { "RefMovAveConfig_st","RefMovAveConfig"},
+            { "DecIntCoeffs_t","DecIntCoeffs"},
+            
+
+
+           
         };
 
        
@@ -174,7 +206,7 @@ namespace cppHeaderParse
                 return;
             }
 
-            // Let’s try and read in the file
+            // LetÂ’s try and read in the file
             string text = "";
             try
             {
@@ -186,16 +218,16 @@ namespace cppHeaderParse
                 Console.WriteLine("usage: cppHeaderParse.exe input_file [output_file]");
             }
 
-            // Let’s remove all the /*...*/ style comments
+            // LetÂ’s remove all the /*...*/ style comments
             text = Regex.Replace(text, @"/\*[^*]*\*+(?:[^*/][^*]*\*+)*/", string.Empty);
 
-            // Let’s create the three output containers, these will be merged at the end
+            // LetÂ’s create the three output containers, these will be merged at the end
             var top_area = new StringBuilder("// Generated using CppHeader2CS\r\n");
             var usings_area = new StringBuilder("\r\nusing System;\r\nusing System.Runtime.InteropServices;\r\n");
             var ns_area = new StringBuilder(text.Length);
             var class_area = new StringBuilder(text.Length);     
 
-            // Let’s now process the input file
+            // LetÂ’s now process the input file
             try
             {
                 MatchCollection matches = Regex.Matches(text, mainParser, RegexOptions.Multiline |
@@ -204,7 +236,7 @@ namespace cppHeaderParse
 
                 foreach (Match match in matches)
                 {
-                    // First, let’s check to see if the user wants to skip the source line using "// C2CS_SKIP"
+                    // First, letÂ’s check to see if the user wants to skip the source line using "// C2CS_SKIP"
                     string comments = match.Groups["comments"].Value;
                     if (comments.Contains("C2CS_SKIP"))
                     {
@@ -218,7 +250,7 @@ namespace cppHeaderParse
                         MatchDefineWithParameters(class_area, match);
                         //Console.WriteLine("#define with a parameter time: " + timer.ElapsedMilliseconds + "ms");
                     }
-                    // Next, let’s see if it is a #define without a parameter, Example: #define test
+                    // Next, letÂ’s see if it is a #define without a parameter, Example: #define test
                     else if (match.Groups["def_name"].Success && match.Groups["def_value"].Length == 0)
                     {
                         top_area.AppendLine("#define " + match.Groups["def_name"].Value + comments);
@@ -385,7 +417,7 @@ namespace cppHeaderParse
                     //Console.WriteLine(ns_section.ToString());
                 }
 
-                // Now let’s combine all the StringBuilder sections into "final"
+                // Now letÂ’s combine all the StringBuilder sections into "final"
                 StringBuilder final = new StringBuilder(text.Length + 128);
                 final.Append(top_area);
                 final.Append(usings_area);
@@ -458,7 +490,7 @@ namespace cppHeaderParse
             bool outBool;
             string newLine = "";
 
-            //////  Let’s first see if the type is specified by the user  //////
+            //////  LetÂ’s first see if the type is specified by the user  //////
             Match specifiedType = Regex.Match(comments, 
                 @"C2CS_TYPE:[\ \t\r\n]?((?:(?:(?!\d)\w+(?:\.(?!\d)\w+)*)\.)?(?:(?!\d)\w+))(?:[\ \t\r\n].*|$)");
             if (specifiedType.Success)
@@ -466,39 +498,39 @@ namespace cppHeaderParse
                 newLine = specifiedType.Groups[1].ToString() + " " + name + " = " + val;
                 AddVarName(name, ConstDesc.canBeFloat);
             }
-            //////  Let’s see if it can be parsed to simple int  //////
+            //////  LetÂ’s see if it can be parsed to simple int  //////
             else if (int.TryParse(val, NumberStyles.AllowExponent | NumberStyles.AllowLeadingSign, null, 
                 out outInt))
             {
                 newLine = "int " + name + " = " + outInt;
                 AddVarName(name, ConstDesc.canBeFloat | ConstDesc.canBeDouble | ConstDesc.canBeInt32);
             }
-            //////  Let’s see if it can be parsed to double  //////
+            //////  LetÂ’s see if it can be parsed to double  //////
             else if (double.TryParse(val.TrimEnd('d', 'D'), out outDouble))
             {
                 newLine = "double " + name + " = " + val ;
                 AddVarName(name, ConstDesc.canBeDouble);
             }               
-            //////  Let’s see if it can be parsed to float  //////
+            //////  LetÂ’s see if it can be parsed to float  //////
             else if (float.TryParse(val.TrimEnd('f', 'F'), out outFloat))
             {
                 newLine = "float " + name + " = " + val;
                 AddVarName(name, ConstDesc.canBeFloat | ConstDesc.canBeDouble);
             }
-            //////  Let’s see if it can be parsed to simple boolean  //////
+            //////  LetÂ’s see if it can be parsed to simple boolean  //////
             else if (bool.TryParse(val.ToLower(), out outBool))
             {
                 newLine = "bool " + name + " = " + val.ToLower();
                 AddVarName(name, ConstDesc.canBeBool);
             }
-            //////  Let’s see if it can be parsed to simple int  //////
+            //////  LetÂ’s see if it can be parsed to simple int  //////
             else if (val.StartsWith("0x")  && int.TryParse(val.Substring(2), NumberStyles.AllowHexSpecifier,
                 null, out outInt))
             {
                 newLine = "int " + name + " = " + val ;
                 AddVarName(name, ConstDesc.canBeFloat | ConstDesc.canBeInt32);
             }            
-            //////  Okay, no luck so far, let’s see if it might be a simple int or float expressions //////
+            //////  Okay, no luck so far, letÂ’s see if it might be a simple int or float expressions //////
             // Note: There are some expression tools in .net that can be used to make this section clean 
             //       and powerful but I'm afraid the performance is not going to be that great since it is 
             //       doing full expressions.
@@ -565,25 +597,25 @@ $", RegexOptions.IgnorePatternWhitespace);
                         }
                     }
 
-                    // we should have some types that are supported, let’s wee if int is first
+                    // we should have some types that are supported, letÂ’s wee if int is first
                     if (allConst.HasFlag(ConstDesc.canBeInt32))
                     {
                         newLine = "int " + name + " = " + val;
                         AddVarName(name, ConstDesc.canBeInt32);
                     }
-                    // if we cannot use int then let’s try float
+                    // if we cannot use int then letÂ’s try float
                     else if (allConst.HasFlag(ConstDesc.canBeFloat))
                     {
                         newLine = "float " + name + " = " + val;
                         AddVarName(name, ConstDesc.canBeFloat);
                     }
-                    // if we cannot use int then let’s try float
+                    // if we cannot use int then letÂ’s try float
                     else if (allConst.HasFlag(ConstDesc.canBeDouble))
                     {
                         newLine = "double " + name + " = " + val;
                         AddVarName(name, ConstDesc.canBeFloat);
                     }
-                    // int or float did not work, let’s just default to a string
+                    // int or float did not work, letÂ’s just default to a string
                     else
                     {
                         newLine = "string " + name + " = \"" + val + "\"";
@@ -609,13 +641,13 @@ $", RegexOptions.IgnorePatternWhitespace);
                         }
                     }
 
-                    // let’s see if the int type was supported
+                    // letÂ’s see if the int type was supported
                     if (allConst.HasFlag(ConstDesc.canBeBool))
                     {
                         newLine = "bool " + name + " = " + val ;
                         AddVarName(name, ConstDesc.canBeBool);
                     }
-                    // if not, then let’s just default to a string
+                    // if not, then letÂ’s just default to a string
                     else
                     {
                         newLine = "string " + name + " = \"" + val + "\"";
@@ -623,7 +655,7 @@ $", RegexOptions.IgnorePatternWhitespace);
                     }
                 }
 
-                //the RegEx's could not match to an simple into or boolean expression, let’s default to string.
+                //the RegEx's could not match to an simple into or boolean expression, letÂ’s default to string.
                 if (!isBoolExpression && !isIntExpression)
                 {
                     newLine = "string " + name + " = \"" + val + "\"";
